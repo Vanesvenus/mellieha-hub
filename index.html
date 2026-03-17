@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mellieħa Hub — Events, News & Local Community</title>
-<meta name="description" content="Mellieħa Hub is your local community website for Mellieħa, Malta. Find upcoming events, local news, businesses, job openings and live weather for all of Mellieħa">
+<meta name="description" content="Mellieħa Hub is your local community website for Mellieħa, Malta. Find upcoming events, local news, businesses, job openings and live weather for Mellieħa Bay.">
 <meta name="keywords" content="Mellieħa, Malta, Mellieha events, Mellieha news, Mellieha businesses, things to do in Mellieha, Mellieha community, Mellieha Bay, local Malta">
 <meta name="author" content="Mellieħa Hub">
 <meta name="robots" content="index, follow">
@@ -129,6 +129,9 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
 .job-pill-title { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 4px; }
 .job-pill-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
 .modal-menu { font-size: 14px; line-height: 1.8; white-space: pre-line; background: var(--warm-white); border-radius: 8px; padding: 12px 14px; }
+.lang-toggle { display: flex; gap: 4px; margin-left: auto; }
+.lang-btn { background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-family: 'Crimson Pro', serif; cursor: pointer; transition: all 0.2s; }
+.lang-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
 @media (max-width: 600px) { .weather-details { margin-left: 0; } .site-title { font-size: 22px; } .featured-title { font-size: 18px; } }
 </style>
 </head>
@@ -138,16 +141,20 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
     <div class="header-top">
       <div>
         <div class="site-title">Mellieħa Hub</div>
-        <div class="site-subtitle">Il-qalba tal-komunità · Community Heart ✦ </div>
+        <div class="site-subtitle">Il-qalba tal-komunità · Community Heart</div>
       </div>
       <div class="header-date"><strong id="day-name"></strong><span id="date-str"></span></div>
     </div>
     <div class="nav">
-      <button class="nav-btn active" onclick="setTab('all')">All</button>
-      <button class="nav-btn" onclick="setTab('events')">Events</button>
-      <button class="nav-btn" onclick="setTab('news')">News</button>
-      <button class="nav-btn" onclick="setTab('businesses')">Businesses</button>
-      <button class="nav-btn" onclick="setTab('weather')">Weather</button>
+      <button class="nav-btn active" onclick="setTab('all')" id="nav-all">All</button>
+      <button class="nav-btn" onclick="setTab('events')" id="nav-events">Events</button>
+      <button class="nav-btn" onclick="setTab('news')" id="nav-news">News</button>
+      <button class="nav-btn" onclick="setTab('businesses')" id="nav-businesses">Businesses</button>
+      <button class="nav-btn" onclick="setTab('weather')" id="nav-weather">Weather</button>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="lang-en" onclick="setLang('en')">🇬🇧 EN</button>
+        <button class="lang-btn" id="lang-mt" onclick="setLang('mt')">🇲🇹 MT</button>
+      </div>
     </div>
   </div>
 
@@ -161,57 +168,57 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
       </div>
     </div>
     <div class="weather-details">
-      <div class="weather-detail"><span class="weather-detail-val" id="w-wind">--</span><span class="weather-detail-lbl">Wind</span></div>
-      <div class="weather-detail"><span class="weather-detail-val" id="w-humidity">--%</span><span class="weather-detail-lbl">Humidity</span></div>
-      <div class="weather-detail"><span class="weather-detail-val" id="w-sea">--°C</span><span class="weather-detail-lbl">Sea</span></div>
-      <div class="weather-detail"><span class="weather-detail-val" id="w-rain">--%</span><span class="weather-detail-lbl">Rain</span></div>
+      <div class="weather-detail"><span class="weather-detail-val" id="w-wind">--</span><span class="weather-detail-lbl" id="wl-wind">Wind</span></div>
+      <div class="weather-detail"><span class="weather-detail-val" id="w-humidity">--%</span><span class="weather-detail-lbl" id="wl-humidity">Humidity</span></div>
+      <div class="weather-detail"><span class="weather-detail-val" id="w-sea">--°C</span><span class="weather-detail-lbl" id="wl-sea">Sea</span></div>
+      <div class="weather-detail"><span class="weather-detail-val" id="w-rain">--%</span><span class="weather-detail-lbl" id="wl-rain">Rain</span></div>
     </div>
   </div>
 
   <div class="main">
     <div class="featured-banner" id="featured-banner" onclick="openFeaturedEvent()">
-      <div class="featured-tag">Next Event</div>
+      <div class="featured-tag" id="featured-tag">Next Event</div>
       <div class="featured-title" id="featured-title">Loading...</div>
       <div class="featured-meta" id="featured-meta"></div>
     </div>
 
     <div id="tab-all" class="tab-content active">
-      <div class="section-header"><div class="section-title">Upcoming Events</div><div class="section-line"></div><div class="section-more" onclick="setTab('events')">View all →</div></div>
+      <div class="section-header"><div class="section-title" id="st-upcoming">Upcoming Events</div><div class="section-line"></div><div class="section-more" onclick="setTab('events')" id="st-viewall-events">View all →</div></div>
       <div class="events-grid" id="home-events-grid"><div class="empty-msg">Loading events...</div></div>
-      <div class="section-header"><div class="section-title">Latest News</div><div class="section-line"></div><div class="section-more" onclick="setTab('news')">View all →</div></div>
+      <div class="section-header"><div class="section-title" id="st-latestnews">Latest News</div><div class="section-line"></div><div class="section-more" onclick="setTab('news')" id="st-viewall-news">View all →</div></div>
       <div class="news-list" id="home-news-list"><div style="color:var(--muted);font-size:14px;padding:1rem 0;">Loading news...</div></div>
-      <div class="section-header"><div class="section-title">Local Businesses</div><div class="section-line"></div><div class="section-more" onclick="setTab('businesses')">View all →</div></div>
+      <div class="section-header"><div class="section-title" id="st-businesses">Local Businesses</div><div class="section-line"></div><div class="section-more" onclick="setTab('businesses')" id="st-viewall-biz">View all →</div></div>
       <div class="biz-grid" id="home-biz-grid"><div style="color:var(--muted);font-size:14px;padding:1rem 0;grid-column:1/-1;">Loading businesses...</div></div>
       <div class="submit-banner">
-        <div class="submit-banner-text"><strong>Share with Mellieħa</strong>Submit an event, news tip, or list your business</div>
+        <div class="submit-banner-text"><strong id="sb-title-all">Share with Mellieħa</strong><span id="sb-desc-all">Submit an event, news tip, or list your business</span></div>
         <div class="submit-links">
-          <a href="/submit-event.html" class="submit-link primary">Event →</a>
-          <a href="/submit-news.html" class="submit-link secondary">News →</a>
-          <a href="/submit-business.html" class="submit-link tertiary">Business →</a>
+          <a href="/submit-event.html" class="submit-link primary" id="sb-event">Event →</a>
+          <a href="/submit-news.html" class="submit-link secondary" id="sb-news">News →</a>
+          <a href="/submit-business.html" class="submit-link tertiary" id="sb-biz">Business →</a>
         </div>
       </div>
     </div>
 
     <div id="tab-events" class="tab-content">
-      <div class="section-header"><div class="section-title">All Events</div><div class="section-line"></div></div>
+      <div class="section-header"><div class="section-title" id="st-allevents">All Events</div><div class="section-line"></div></div>
       <div class="events-grid" id="all-events-grid"><div class="empty-msg">Loading...</div></div>
-      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong>Know about an event?</strong>Let the community know.</div><a href="/submit-event.html" class="submit-link primary">Submit event →</a></div>
+      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong id="sb-ev-title">Know about an event?</strong><span id="sb-ev-desc">Let the community know.</span></div><a href="/submit-event.html" class="submit-link primary" id="sb-ev-btn">Submit event →</a></div>
     </div>
 
     <div id="tab-news" class="tab-content">
-      <div class="section-header"><div class="section-title">All News</div><div class="section-line"></div></div>
+      <div class="section-header"><div class="section-title" id="st-allnews">All News</div><div class="section-line"></div></div>
       <div class="news-list" id="all-news-list"><div style="color:var(--muted);font-size:14px;padding:1rem 0;">Loading...</div></div>
-      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong>Have a news tip?</strong>Share what's happening.</div><a href="/submit-news.html" class="submit-link secondary">Submit news →</a></div>
+      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong id="sb-nw-title">Have a news tip?</strong><span id="sb-nw-desc">Share what's happening.</span></div><a href="/submit-news.html" class="submit-link secondary" id="sb-nw-btn">Submit news →</a></div>
     </div>
 
     <div id="tab-businesses" class="tab-content">
-      <div class="section-header"><div class="section-title">Local Businesses</div><div class="section-line"></div></div>
+      <div class="section-header"><div class="section-title" id="st-allbiz">Local Businesses</div><div class="section-line"></div></div>
       <div class="biz-grid" id="all-biz-grid"><div style="color:var(--muted);font-size:14px;padding:1rem 0;grid-column:1/-1;">Loading...</div></div>
-      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong>Own a business?</strong>List it free in 2 minutes.</div><a href="/submit-business.html" class="submit-link tertiary">List your business →</a></div>
+      <div class="submit-banner" style="margin-top:1.5rem;"><div class="submit-banner-text"><strong id="sb-bz-title">Own a business?</strong><span id="sb-bz-desc">List it free in 2 minutes.</span></div><a href="/submit-business.html" class="submit-link tertiary" id="sb-bz-btn">List your business →</a></div>
     </div>
 
     <div id="tab-weather" class="tab-content">
-      <div class="section-header"><div class="section-title">7-Day Forecast</div><div class="section-line"></div></div>
+      <div class="section-header"><div class="section-title" id="st-weather">7-Day Forecast</div><div class="section-line"></div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;" id="forecast-grid">
         <div style="color:var(--muted);font-size:14px;padding:1rem 0;grid-column:1/-1;">Loading forecast...</div>
       </div>
@@ -219,9 +226,9 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
   </div>
 
   <div class="footer">
-    <strong>Mellieħa Hub</strong> · Your community, connected<br>
+    <strong>Mellieħa Hub</strong> · <span id="footer-tagline">Your community, connected</span><br>
     <span style="font-size:11px;margin-top:4px;display:block;">
-      <a href="/submit-event.html">Submit an event</a> · <a href="/submit-news.html">Submit news</a> · <a href="/submit-business.html">List your business</a>
+      <a href="/submit-event.html" id="footer-event">Submit an event</a> · <a href="/submit-news.html" id="footer-news">Submit news</a> · <a href="/submit-business.html" id="footer-biz">List your business</a>
     </span>
   </div>
 </div>
@@ -236,8 +243,8 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
       <div class="modal-meta"><span id="em-date"></span><span id="em-loc"></span></div>
     </div>
     <div class="modal-body">
-      <div class="modal-section"><div class="modal-section-title">About this event</div><div class="modal-desc" id="em-desc"></div></div>
-      <div class="modal-section"><div class="modal-section-title">Submitted by</div><div class="modal-desc" id="em-submitted"></div></div>
+      <div class="modal-section"><div class="modal-section-title" id="em-about-title">About this event</div><div class="modal-desc" id="em-desc"></div></div>
+      <div class="modal-section"><div class="modal-section-title" id="em-by-title">Submitted by</div><div class="modal-desc" id="em-submitted"></div></div>
     </div>
   </div>
 </div>
@@ -252,8 +259,8 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
       <div class="modal-meta"><span id="nm-time"></span></div>
     </div>
     <div class="modal-body">
-      <div class="modal-section"><div class="modal-section-title">Full story</div><div class="modal-desc" id="nm-excerpt"></div></div>
-      <div class="modal-section"><div class="modal-section-title">Submitted by</div><div class="modal-desc" id="nm-submitted"></div></div>
+      <div class="modal-section"><div class="modal-section-title" id="nm-story-title">Full story</div><div class="modal-desc" id="nm-excerpt"></div></div>
+      <div class="modal-section"><div class="modal-section-title" id="nm-by-title">Submitted by</div><div class="modal-desc" id="nm-submitted"></div></div>
     </div>
   </div>
 </div>
@@ -268,16 +275,126 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
       <div class="modal-meta"><span id="bm-address"></span></div>
     </div>
     <div class="modal-body">
-      <div class="modal-section"><div class="modal-section-title">About</div><div class="modal-desc" id="bm-desc"></div></div>
-      <div class="modal-section" id="bm-contact-section"><div class="modal-section-title">Contact</div><div class="modal-contact" id="bm-contact"></div></div>
-      <div class="modal-section" id="bm-menu-section" style="display:none;"><div class="modal-section-title">Menu / Products / Services</div><div class="modal-menu" id="bm-menu"></div></div>
-      <div class="modal-section" id="bm-jobs-section" style="display:none;"><div class="modal-section-title">Job Openings</div><div id="bm-jobs"></div></div>
+      <div class="modal-section"><div class="modal-section-title" id="bm-about-title">About</div><div class="modal-desc" id="bm-desc"></div></div>
+      <div class="modal-section" id="bm-contact-section"><div class="modal-section-title" id="bm-contact-title">Contact</div><div class="modal-contact" id="bm-contact"></div></div>
+      <div class="modal-section" id="bm-menu-section" style="display:none;"><div class="modal-section-title" id="bm-menu-title">Menu / Products / Services</div><div class="modal-menu" id="bm-menu"></div></div>
+      <div class="modal-section" id="bm-jobs-section" style="display:none;"><div class="modal-section-title" id="bm-jobs-title">Job Openings</div><div id="bm-jobs"></div></div>
     </div>
   </div>
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://xwistwtnmkixbbmsnfbf.supabase.co';
+  const TRANSLATIONS = {
+    en: {
+      subtitle: 'Il-qalba tal-komunità · Community Heart',
+      navAll: 'All', navEvents: 'Events', navNews: 'News', navBiz: 'Businesses', navWeather: 'Weather',
+      wlWind: 'Wind', wlHumidity: 'Humidity', wlSea: 'Sea', wlRain: 'Rain',
+      wLoading: 'Loading weather...', wFeels: 'Mellieħa Bay · Feels like ',
+      featuredTag: 'Next Event',
+      stUpcoming: 'Upcoming Events', stViewAllEv: 'View all →', stLatestNews: 'Latest News',
+      stViewAllNews: 'View all →', stBiz: 'Local Businesses', stViewAllBiz: 'View all →',
+      stAllEvents: 'All Events', stAllNews: 'All News', stAllBiz: 'Local Businesses',
+      stWeather: '7-Day Forecast',
+      sbTitleAll: 'Share with Mellieħa', sbDescAll: 'Submit an event, news tip, or list your business',
+      sbEvent: 'Event →', sbNews: 'News →', sbBiz: 'Business →',
+      sbEvTitle: 'Know about an event?', sbEvDesc: 'Let the community know.', sbEvBtn: 'Submit event →',
+      sbNwTitle: 'Have a news tip?', sbNwDesc: "Share what's happening.", sbNwBtn: 'Submit news →',
+      sbBzTitle: 'Own a business?', sbBzDesc: 'List it free in 2 minutes.', sbBzBtn: 'List your business →',
+      footerTagline: 'Your community, connected',
+      footerEvent: 'Submit an event', footerNews: 'Submit news', footerBiz: 'List your business',
+      emAbout: 'About this event', emBy: 'Submitted by',
+      nmStory: 'Full story', nmBy: 'Submitted by',
+      bmAbout: 'About', bmContact: 'Contact', bmMenu: 'Menu / Products / Services', bmJobs: 'Job Openings',
+      viewListing: 'View listing', noEvents: 'No upcoming events yet.', submitOne: 'Submit one!',
+      noNews: 'No news yet.', submitTip: 'Submit a tip!', noBiz: 'No businesses listed yet.', listFree: 'List yours free!'
+    },
+    mt: {
+      subtitle: 'Il-qalba tal-komunità · Community Heart',
+      navAll: 'Kollox', navEvents: 'Avvenimenti', navNews: 'Aħbarijiet', navBiz: 'Negozji', navWeather: 'Temp',
+      wlWind: 'Riħ', wlHumidity: 'Umdità', wlSea: 'Baħar', wlRain: 'Xita',
+      wLoading: 'Qed jitgħabba t-temp...', wFeels: 'Bajja tal-Mellieħa · Jħossok bħal ',
+      featuredTag: 'Avveniment Li Ġej',
+      stUpcoming: 'Avvenimenti Li Ġejjin', stViewAllEv: 'Ara kollox →', stLatestNews: 'Aħbarijiet Riċenti',
+      stViewAllNews: 'Ara kollox →', stBiz: 'Negozji Lokali', stViewAllBiz: 'Ara kollox →',
+      stAllEvents: 'L-Avvenimenti Kollha', stAllNews: 'L-Aħbarijiet Kollha', stAllBiz: 'Negozji Lokali',
+      stWeather: 'Previżjoni ta\' 7 Ijiem',
+      sbTitleAll: 'Aqsam mal-Mellieħa', sbDescAll: 'Ibgħat avveniment, aħbar, jew irreġistra n-negozju tiegħek',
+      sbEvent: 'Avveniment →', sbNews: 'Aħbar →', sbBiz: 'Negozju →',
+      sbEvTitle: 'Taf b\'avveniment?', sbEvDesc: 'Għarraf lill-komunità.', sbEvBtn: 'Ibgħat avveniment →',
+      sbNwTitle: 'Għandek aħbar?', sbNwDesc: 'Aqsam x\'qed jiġri.', sbNwBtn: 'Ibgħat aħbar →',
+      sbBzTitle: 'Għandek negozju?', sbBzDesc: 'Irreġistrax b\'xejn fi 2 minuti.', sbBzBtn: 'Irreġistra n-negozju tiegħek →',
+      footerTagline: 'Il-komunità tiegħek, konnessa',
+      footerEvent: 'Ibgħat avveniment', footerNews: 'Ibgħat aħbar', footerBiz: 'Irreġistra n-negozju tiegħek',
+      emAbout: 'Dwar dan l-avveniment', emBy: 'Mibgħut minn',
+      nmStory: 'L-istorja sħiħa', nmBy: 'Mibgħut minn',
+      bmAbout: 'Dwar', bmContact: 'Kuntatt', bmMenu: 'Menu / Prodotti / Servizzi', bmJobs: 'Opportunitajiet ta\' Xogħol',
+      viewListing: 'Ara l-lista', noEvents: 'L-ebda avveniment għalissa.', submitOne: 'Ibgħat wieħed!',
+      noNews: 'L-ebda aħbar għalissa.', submitTip: 'Ibgħat tip!', noBiz: 'L-ebda negozju rreġistrat għalissa.', listFree: 'Irreġistra tiegħek b\'xejn!'
+    }
+  };
+
+  let currentLang = localStorage.getItem('mellieha-lang') || 'en';
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('mellieha-lang', lang);
+    document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+    document.getElementById('lang-mt').classList.toggle('active', lang === 'mt');
+    applyTranslations();
+  }
+
+  function t(key) { return TRANSLATIONS[currentLang][key] || TRANSLATIONS['en'][key]; }
+
+  function applyTranslations() {
+    const T = TRANSLATIONS[currentLang];
+    document.querySelector('.site-subtitle').textContent = T.subtitle;
+    document.getElementById('nav-all').textContent = T.navAll;
+    document.getElementById('nav-events').textContent = T.navEvents;
+    document.getElementById('nav-news').textContent = T.navNews;
+    document.getElementById('nav-businesses').textContent = T.navBiz;
+    document.getElementById('nav-weather').textContent = T.navWeather;
+    document.getElementById('wl-wind').textContent = T.wlWind;
+    document.getElementById('wl-humidity').textContent = T.wlHumidity;
+    document.getElementById('wl-sea').textContent = T.wlSea;
+    document.getElementById('wl-rain').textContent = T.wlRain;
+    document.getElementById('featured-tag').textContent = T.featuredTag;
+    document.getElementById('st-upcoming').textContent = T.stUpcoming;
+    document.getElementById('st-viewall-events').textContent = T.stViewAllEv;
+    document.getElementById('st-latestnews').textContent = T.stLatestNews;
+    document.getElementById('st-viewall-news').textContent = T.stViewAllNews;
+    document.getElementById('st-businesses').textContent = T.stBiz;
+    document.getElementById('st-viewall-biz').textContent = T.stViewAllBiz;
+    document.getElementById('st-allevents').textContent = T.stAllEvents;
+    document.getElementById('st-allnews').textContent = T.stAllNews;
+    document.getElementById('st-allbiz').textContent = T.stAllBiz;
+    document.getElementById('st-weather').textContent = T.stWeather;
+    document.getElementById('sb-title-all').textContent = T.sbTitleAll;
+    document.getElementById('sb-desc-all').textContent = T.sbDescAll;
+    document.getElementById('sb-event').textContent = T.sbEvent;
+    document.getElementById('sb-news').textContent = T.sbNews;
+    document.getElementById('sb-biz').textContent = T.sbBiz;
+    document.getElementById('sb-ev-title').textContent = T.sbEvTitle;
+    document.getElementById('sb-ev-desc').textContent = T.sbEvDesc;
+    document.getElementById('sb-ev-btn').textContent = T.sbEvBtn;
+    document.getElementById('sb-nw-title').textContent = T.sbNwTitle;
+    document.getElementById('sb-nw-desc').textContent = T.sbNwDesc;
+    document.getElementById('sb-nw-btn').textContent = T.sbNwBtn;
+    document.getElementById('sb-bz-title').textContent = T.sbBzTitle;
+    document.getElementById('sb-bz-desc').textContent = T.sbBzDesc;
+    document.getElementById('sb-bz-btn').textContent = T.sbBzBtn;
+    document.getElementById('footer-tagline').textContent = T.footerTagline;
+    document.getElementById('footer-event').textContent = T.footerEvent;
+    document.getElementById('footer-news').textContent = T.footerNews;
+    document.getElementById('footer-biz').textContent = T.footerBiz;
+    document.getElementById('em-about-title').textContent = T.emAbout;
+    document.getElementById('em-by-title').textContent = T.emBy;
+    document.getElementById('nm-story-title').textContent = T.nmStory;
+    document.getElementById('nm-by-title').textContent = T.nmBy;
+    document.getElementById('bm-about-title').textContent = T.bmAbout;
+    document.getElementById('bm-contact-title').textContent = T.bmContact;
+    document.getElementById('bm-menu-title').textContent = T.bmMenu;
+    document.getElementById('bm-jobs-title').textContent = T.bmJobs;
+  }
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aXN0d3RubWtpeGJibXNuZmJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTExMjYsImV4cCI6MjA4OTI2NzEyNn0.QVk4wSI1eoF4Ya7uZzs6aZfKdMBx2g-DjqsY2RvyAHI';
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -497,6 +614,8 @@ body { font-family: 'Crimson Pro', Georgia, serif; background: var(--warm-white)
   }
 
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal('event-modal');closeModal('news-modal');closeModal('biz-modal');} });
+
+  if(currentLang === 'mt') setLang('mt');
 
   loadWeather();
   loadData();
